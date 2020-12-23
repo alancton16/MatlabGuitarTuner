@@ -9,15 +9,18 @@ littleloop = 1;
 note_Freqs = [82.5, 110, 146.8, 196, 246.9, 329.6]; % E, A, D, G, B, e. Open string freqs for A440 tuning
 
 % prompts user to input which string is being tuned
-prompt= '\nPress the number corresponding to string being tune\n E, A, D, G, B, e\n 1, 2, 3, 4, 5, 6\n'; 
+prompt= '\nPress the number corresponding to string being tuned, Press 0 to end program\n E, A, D, G, B, e\n 1, 2, 3, 4, 5, 6\n'; 
 
 %this block prevents the program from running with an invalid string value
 x = ceil(input(prompt)); 
-if x >6 || x < 1
+if x == 0 
+    break; 
+end
+if x >6 || x < 0
     for i = 1:999
         fprintf('Please input a valid number');
         x = input(prompt); 
-        if x <6 && x > 1
+        if x <= 6 && x >= 1
             break;
         else
         end
