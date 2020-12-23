@@ -1,7 +1,11 @@
 % Alan's Guitar Tuner Code
 % Dec 18, 2020
 clc;clear;
+bigloop = 1; 
 
+while bigloop == 1
+    
+littleloop = 1;    
 note_Freqs = [82.5, 110, 146.8, 196, 246.9, 329.6]; % E, A, D, G, B, e. Open string freqs for A440 tuning
 
 % prompts user to input which string is being tuned
@@ -21,7 +25,8 @@ if x >6 || x < 1
 end
 
 our_freq = note_Freqs(x) % desired frequency for chosen string 
-
+while littleloop == 1
+    
 % uses computer mic to record for 5 seconds
 dummy = input('Press enter to start recording\n');
 fprintf('Recording... ');
@@ -38,7 +43,7 @@ L = 220500; % length of audio file
 
 
 f= Fs *(0:(L/2))/L; %frequency steps for plot
-special = [263, 451, 639, 827, 1015, 1203]; % array of lower passband frequencies for FFT filtering
+special = [263, 401, 585, 827, 1081, 1501]; % array of lower passband frequencies for FFT filtering
 f_special = special(x); % lower passband freq to be used
 q = fft(y); %fft of audio data
 P2= abs(q/L); % double sided spectrum
@@ -47,7 +52,7 @@ P1(2:end-1)= 2*P1(2:end-1); % single sided
 
 P1_trunc= P1(1:2001);  % truncates FFT
 for i = (1:2001)    % filters out background noise below threshold
-    if P1_trunc(i) < 0.0005
+    if P1_trunc(i) < 0.002
         P1_trunc(i) = 0; 
     end
 end
@@ -69,13 +74,15 @@ dif_arry = zeros(1,length(locs)); % subtracts desired string freq from each meas
 for i = 1:length(locs)
     dif_arry(i) = our_freq - locs(i); 
 end
-diffresult = abs(dif_arry) < 1.5; % Logic array that sees if any peak was within 1.5 Hz of desired freq 
+diffresult = abs(dif_arry) < 1; % Logic array that sees if any peak was within 1 Hz of desired freq 
    
 
 if ismember(1,diffresult)  % if a peak is withing tolerance tell user string is in tune
     fprintf('String is in tune\n\n');
+    littleloop = 0; 
 elseif isempty(locs) % if there are no peaks print oof
-    fprintf('Oof');
+    fprintf('Oof\n');
+    littleloop = 0; 
 elseif f_char < our_freq % if characteristic freq is less than desired freq tell user to tighten string
     fprintf('Tighten String and try again\n\n');
 else
@@ -83,11 +90,11 @@ else
 end
 
 
-plot(f(1:2001),P1_trunc) % plots single sided fft
+plot(f(1:2001),P1(1:2001)) % plots single sided fft
 
 title('FFT of recorded audio')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude')
 grid on; 
-
- 
+end
+end 
